@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.commands.AutoDriveForward;
 import frc.robot.commands.JoystickDrive;
 import frc.robot.subsystems.SwerveDrive;
 
@@ -31,6 +32,8 @@ public class RobotContainer {
     () -> -m_driverJoystick.getRawAxis(DriveConstants.kJoystickYxis),
     () -> -m_driverJoystick.getRawAxis(DriveConstants.kJoystickRotAxis)
   );
+
+  private AutoDriveForward m_autoDriveForward = new AutoDriveForward(m_swerve);
 
   public RobotContainer() {
     m_swerve.setDefaultCommand(m_drive);
@@ -63,6 +66,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return null;
+    return m_autoDriveForward;
   }
 }

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
@@ -15,7 +17,10 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -67,9 +72,13 @@ public class SwerveDrive extends SubsystemBase {
 
   private final AHRS m_imu = new AHRS();
 
+  private static Translation2d m_translation = new Translation2d();
+
   public void resetHeading() {
     m_imu.reset();
   }
+
+  public void resetOdo(Pose2d startingPose) {  }
 
   public void setModuleStates(SwerveModuleState[] states) {
     SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveConstants.kMaxTranslationalMetersPerSecond);
@@ -84,11 +93,23 @@ public class SwerveDrive extends SubsystemBase {
     return Rotation2d.fromDegrees(Math.IEEEremainder(m_imu.getAngle(), 360));
   }
 
+  public double getXTrans(){
+    return m_translation.getX();
+  }
+
+  public double getYTrans(){
+    return m_translation.getY();
+  }
+
+  public ChassisSpeeds getChassisSpeeds() { return null; }
+
+  public void driveRobotRelative(ChassisSpeeds speeds) { }
+
   public SwerveDrive(){
     AutoBuilder.configureHolonomic(
-        this::getPose, // Robot pose supplier
-        this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
-        this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        () -> new Pose2d(getXTrans(), getYTrans(), getAngle()), // Robot pose supplier
+        this::resetOdo, // Method to reset odometry (will be called if your auto has a starting pose)
+        this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
             new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
@@ -111,4 +132,5 @@ public class SwerveDrive extends SubsystemBase {
   public Command getAutonomousCommand(String pathName){
     PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
     return AutoBuilder.followPathWithEvents(path);
+  }
 }
