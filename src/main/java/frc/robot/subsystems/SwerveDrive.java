@@ -17,6 +17,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -25,6 +26,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -80,6 +82,10 @@ public class SwerveDrive extends SubsystemBase {
 
   public void resetOdo(Pose2d startingPose) {  }
 
+  public Pose2d getPoseMeters(){
+    return new Pose2d(m_translation, getAngle());
+  }
+
   public void setModuleStates(SwerveModuleState[] states) {
     SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveConstants.kMaxTranslationalMetersPerSecond);
 
@@ -88,6 +94,11 @@ public class SwerveDrive extends SubsystemBase {
     m_backLeft.setDesiredState(states[2]);
     m_backRight.setDesiredState(states[3]);
   }
+
+  public void setSwerveModuleStatesAuto(SwerveModuleState[] states) {
+    setModuleStates(states);  
+  }
+
 
   public Rotation2d getAngle() {
     return Rotation2d.fromDegrees(Math.IEEEremainder(m_imu.getAngle(), 360));
@@ -105,22 +116,23 @@ public class SwerveDrive extends SubsystemBase {
 
   public void driveRobotRelative(ChassisSpeeds speeds) { }
 
-  public SwerveDrive(){
-    AutoBuilder.configureHolonomic(
-        () -> new Pose2d(getXTrans(), getYTrans(), getAngle()), // Robot pose supplier
-        this::resetOdo, // Method to reset odometry (will be called if your auto has a starting pose)
-        this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-            new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-            new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-            4.5, // Max module speed, in m/s
-            0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-            new ReplanningConfig() // Default path replanning config. See the API for the options here
-        ),
-        this // Reference to this subsystem to set requirements
-    );
-  }
+  // public SwerveDrive(){
+  //   HolonomicDriveController()
+  //   AutoBuilder.configureHolonomic(
+  //       () -> new Pose2d(getXTrans(), getYTrans(), getAngle()), // Robot pose supplier
+  //       this::resetOdo, // Method to reset odometry (will be called if your auto has a starting pose)
+  //       this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+  //       this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+  //       new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+  //           new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+  //           new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+  //           4.5, // Max module speed, in m/s
+  //           0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+  //           new ReplanningConfig() // Default path replanning config. See the API for the options here
+  //       ),
+  //       this // Reference to this subsystem to set requirements
+  //   );
+  // }
 
   public void stop() {
     m_frontLeft.stop();
@@ -129,8 +141,9 @@ public class SwerveDrive extends SubsystemBase {
     m_backRight.stop();
   }
 
-  public Command getAutonomousCommand(String pathName){
-    PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-    return AutoBuilder.followPathWithEvents(path);
-  }
-}
+//   public Command getAutonomousCommand(String pathName){
+//     PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+//     return AutoBuilder.followPathWithEvents(path);
+//     path.getPoint(0)
+//   }
+// }
