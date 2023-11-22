@@ -7,17 +7,9 @@ package frc.robot.subsystems;
 import java.util.function.Supplier;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.FollowPathHolonomic;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
-
 import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -76,6 +68,10 @@ public class SwerveDrive extends SubsystemBase {
 
   private static Translation2d m_translation = new Translation2d();
 
+  private final PIDController m_xPID = new PIDController(DriveConstants.kP_X, DriveConstants.kI_X, DriveConstants.kD_X);
+  private final PIDController m_yPID = new PIDController(DriveConstants.kP_Y, DriveConstants.kI_Y, DriveConstants.kD_Y);
+  private final PIDController m_thetaPID = new PIDController(DriveConstants.kP_Theta, DriveConstants.kI_Theta, DriveConstants.kD_Theta);
+
   public void resetHeading() {
     m_imu.reset();
   }
@@ -84,6 +80,10 @@ public class SwerveDrive extends SubsystemBase {
 
   public Pose2d getPoseMeters(){
     return new Pose2d(m_translation, getAngle());
+  }
+
+  public SwerveDriveKinematics getSwerveKinematics(){
+    return new SwerveDriveKinematics(m_frontLeft.getTranslation(), m_frontRight.getTranslation(), m_backLeft.getTranslation(), m_backRight.getTranslation());
   }
 
   public void setModuleStates(SwerveModuleState[] states) {
@@ -112,6 +112,18 @@ public class SwerveDrive extends SubsystemBase {
     return m_translation.getY();
   }
 
+  public PIDController getXController(){
+    return m_xPID;
+  }
+
+  public PIDController getYController(){
+    return m_yPID;
+  }
+
+  public PIDController getThetaController(){
+    return m_thetaPID;
+  }
+  
   public ChassisSpeeds getChassisSpeeds() { return null; }
 
   public void driveRobotRelative(ChassisSpeeds speeds) { }
@@ -146,4 +158,4 @@ public class SwerveDrive extends SubsystemBase {
 //     return AutoBuilder.followPathWithEvents(path);
 //     path.getPoint(0)
 //   }
-// }
+}

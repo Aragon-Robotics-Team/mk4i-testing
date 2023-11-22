@@ -70,6 +70,18 @@ public final class Constants {
     public static boolean kFrontLeftTurningReversed = true;
     public static boolean kFrontRightTurningReversed = true;
     public static boolean kBackLeftTurningReversed = true;
-    public static boolean kBackRightTurningReversed = true;;
+    public static boolean kBackRightTurningReversed = true;
+
+    public static int kP_X = 0;
+    public static int kI_X = 0;
+    public static int kD_X = 0;
+
+    public static int kP_Y = 0;
+    public static int kI_Y = 0;
+    public static int kD_Y = 0;
+
+    public static int kP_Theta = 0;
+    public static int kI_Theta = 0;
+    public static int kD_Theta = 0;
   }
 }

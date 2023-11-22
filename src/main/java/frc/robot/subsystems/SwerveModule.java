@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -32,6 +33,8 @@ public class SwerveModule extends SubsystemBase {
   private final PIDController m_turningPIDController;
 
   private final int m_moduleId;
+
+  private Translation2d m_translation = new Translation2d();
 
   /** Creates a new SwerveModule. */
   public SwerveModule(int driveId, int turnId, int absoluteEncoderPort, double absoluteEncoderOffset,
@@ -100,6 +103,10 @@ public class SwerveModule extends SubsystemBase {
         m_turningPIDController.calculate(getRotation().getRadians(), state.angle.getRadians()));
 
     SmartDashboard.putString("Swerve_" + m_moduleId + "_state", state.toString());
+  }
+
+  public Translation2d getTranslation(){
+    return new Translation2d(m_translation.getX(), m_translation.getY());
   }
 
   public void stop() {

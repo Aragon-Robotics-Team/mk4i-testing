@@ -60,10 +60,10 @@ public class TrajectoryUtils {
           new PPSwerveControllerCommand(
               trajectory,
               swerveDrive::getPoseMeters,
-              SWERVE_DRIVE.kSwerveKinematics,
-              swerveDrive.getXPidController(),
-              swerveDrive.getYPidController(),
-              swerveDrive.getThetaPidController(),
+              swerveDrive.getSwerveKinematics(),
+              swerveDrive.getXController(),
+              swerveDrive.getYController(),
+              swerveDrive.getThetaController(),
               swerveDrive::setSwerveModuleStatesAuto,
               true,
               swerveDrive);
