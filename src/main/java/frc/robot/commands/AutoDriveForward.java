@@ -13,7 +13,7 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.SwerveDrive;
-import frc.util.TrajectoryUtils;
+import frc.robot.utils.TrajectoryUtils;
 
 public class AutoDriveForward extends CommandBase {
 
