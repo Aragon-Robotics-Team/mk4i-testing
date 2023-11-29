@@ -20,11 +20,12 @@ public class AutoDriveForward extends CommandBase {
   private SwerveDrive m_swerve;
   private PathConstraints m_constraints = new PathConstraints(DriveConstants.kTeleopMaxSpeedMetersPerSecond, DriveConstants.kTeleopMaxAccelMetersPerSecondSquared);
   
-  List<PathPlannerTrajectory> m_trajectories = TrajectoryUtils.readTrajectory("C:/Users/admin/OneDrive/Documents/GitHub/Robotics/mk4i-testing/mk4i-testing/src/main/deploy/pathplanner/Drive Forward.path", m_constraints);
-  List<PPSwerveControllerCommand> m_swerveCommands = TrajectoryUtils.generatePPSwerveControllerCommand(m_swerve, m_trajectories);
+  private List<PathPlannerTrajectory> m_trajectories = TrajectoryUtils.readTrajectory("DriveForward", m_constraints);
+  //private List<PPSwerveControllerCommand> m_swerveCommands = TrajectoryUtils.generatePPSwerveControllerCommand(m_swerve, m_trajectories);
   
   /** Creates a new AutoDriveForward. */
   public AutoDriveForward(SwerveDrive swerve) {
+    System.out.println("Trajectories: " + m_trajectories);
     m_swerve = swerve;
         // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -37,7 +38,7 @@ public class AutoDriveForward extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_swerveCommands.get(0);
+    //m_swerveCommands.get(0);
   }
 
   // Called once the command ends or is interrupted.
