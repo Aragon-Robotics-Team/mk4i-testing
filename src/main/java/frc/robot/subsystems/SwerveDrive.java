@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -15,7 +16,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -64,26 +68,40 @@ public class SwerveDrive extends SubsystemBase {
     3
   );
 
-  private final AHRS m_imu = new AHRS();
+  private SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeft.getTranslation(), m_frontRight.getTranslation(), m_backLeft.getTranslation(), m_backRight.getTranslation());
 
-  private static Translation2d m_translation = new Translation2d();
+  private final AHRS m_imu = new AHRS();
 
   private final PIDController m_xPID = new PIDController(DriveConstants.kP_X, DriveConstants.kI_X, DriveConstants.kD_X);
   private final PIDController m_yPID = new PIDController(DriveConstants.kP_Y, DriveConstants.kI_Y, DriveConstants.kD_Y);
   private final PIDController m_thetaPID = new PIDController(DriveConstants.kP_Theta, DriveConstants.kI_Theta, DriveConstants.kD_Theta);
 
+  private final SwerveDriveOdometry m_odo = new SwerveDriveOdometry(m_kinematics, getAngle(), new SwerveModulePosition[] {
+    m_frontLeft.getPosition(),
+    m_frontRight.getPosition(),
+    m_backLeft.getPosition(),
+    m_backRight.getPosition()
+  });
+
   public void resetHeading() {
     m_imu.reset();
   }
 
-  public void resetOdo(Pose2d startingPose) {  }
+  public void resetOdo(Pose2d pose) {
+    m_odo.resetPosition(getAngle(), new SwerveModulePosition[] {
+      m_frontLeft.getPosition(),
+      m_frontRight.getPosition(),
+      m_backLeft.getPosition(),
+      m_backRight.getPosition()
+    }, pose);
+  }
 
   public Pose2d getPoseMeters(){
-    return new Pose2d(m_translation, getAngle());
+    return m_odo.getPoseMeters();
   }
 
   public SwerveDriveKinematics getSwerveKinematics(){
-    return new SwerveDriveKinematics(m_frontLeft.getTranslation(), m_frontRight.getTranslation(), m_backLeft.getTranslation(), m_backRight.getTranslation());
+    return m_kinematics;
   }
 
   public void setModuleStates(SwerveModuleState[] states) {
@@ -99,17 +117,19 @@ public class SwerveDrive extends SubsystemBase {
     setModuleStates(states);  
   }
 
+  public void printVelocitiesandPositions(){
+    System.out.println("Front left Velocity: " + m_frontLeft.getDriveVelocity());
+    System.out.println("Front left Position: " + m_frontLeft.getDrivePosition());
+    System.out.println("Front right velocity: " + m_frontRight.getDriveVelocity());
+    System.out.println("Front right Position: " + m_frontRight.getDrivePosition());
+    System.out.println("Back left velocity: " + m_backLeft.getDriveVelocity());
+    System.out.println("Back left Position: " + m_backLeft.getDrivePosition());
+    System.out.println("Back right velocity: " + m_backRight.getDriveVelocity());
+    System.out.println("Back right Position: " + m_backRight.getDrivePosition());
+  }
 
   public Rotation2d getAngle() {
     return Rotation2d.fromDegrees(Math.IEEEremainder(m_imu.getAngle(), 360));
-  }
-
-  public double getXTrans(){
-    return m_translation.getX();
-  }
-
-  public double getYTrans(){
-    return m_translation.getY();
   }
 
   public PIDController getXController(){
@@ -153,9 +173,14 @@ public class SwerveDrive extends SubsystemBase {
     m_backRight.stop();
   }
 
-//   public Command getAutonomousCommand(String pathName){
-//     PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-//     return AutoBuilder.followPathWithEvents(path);
-//     path.getPoint(0)
-//   }
+  @Override
+  public void periodic() {
+    m_odo.update(getAngle(),
+      new SwerveModulePosition[] {
+        m_frontLeft.getPosition(), m_frontRight.getPosition(),
+        m_backLeft.getPosition(), m_backRight.getPosition()
+      });
+
+    SmartDashboard.putNumber("Angle", getAngle().getDegrees());
+  }
 }

@@ -19,31 +19,38 @@ public class AutoDriveForward extends CommandBase {
 
   private SwerveDrive m_swerve;
   private PathConstraints m_constraints = new PathConstraints(DriveConstants.kTeleopMaxSpeedMetersPerSecond, DriveConstants.kTeleopMaxAccelMetersPerSecondSquared);
-  
-  private List<PathPlannerTrajectory> m_trajectories = TrajectoryUtils.readTrajectory("DriveForward", m_constraints);
-  //private List<PPSwerveControllerCommand> m_swerveCommands = TrajectoryUtils.generatePPSwerveControllerCommand(m_swerve, m_trajectories);
-  
+  private List<PathPlannerTrajectory> m_trajectories;
+  private List<PPSwerveControllerCommand> m_swerveCommands;
+    
   /** Creates a new AutoDriveForward. */
   public AutoDriveForward(SwerveDrive swerve) {
-    System.out.println("Trajectories: " + m_trajectories);
     m_swerve = swerve;
+
+    
+    m_trajectories = TrajectoryUtils.readTrajectory("DriveForward", m_constraints);
+    m_swerveCommands = TrajectoryUtils.generatePPSwerveControllerCommand_(m_swerve, m_trajectories);
         // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
+  public void initialize() {    
+    System.out.println(m_trajectories);
+    // System.out.println(m_swerveCommands);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //m_swerveCommands.get(0);
+    m_swerveCommands.get(0).execute();
+    System.out.println(m_swerveCommands.get(0));
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    System.out.println("End");
+  }
 
   // Returns true when the command should end.
   @Override

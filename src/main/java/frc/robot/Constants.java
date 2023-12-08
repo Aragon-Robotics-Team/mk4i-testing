@@ -18,7 +18,7 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   public static class DriveConstants {
-    public static final double kDriveEncoderPositionToMeters = (1.0 / 6.75) * Units.inchesToMeters(4.0 * Math.PI);
+    public static final double kDriveEncoderPositionToMeters = (1.0 / 6.75) * Units.inchesToMeters(4.0 * Math.PI); 
     public static final double kDriveEncoderVelocityToMetersPerSec = kDriveEncoderPositionToMeters / 60.0;
     public static final double kTurnEncoderPositionToRadians = 2.0 * Math.PI;
     public static final double kTranslationalDeadbandMetersPerSecond = 0.001;
@@ -72,16 +72,16 @@ public final class Constants {
     public static boolean kBackLeftTurningReversed = true;
     public static boolean kBackRightTurningReversed = true;
 
-    public static int kP_X = 0;
-    public static int kI_X = 0;
-    public static int kD_X = 0;
+    public static double kP_X = 0.5;
+    public static double kI_X = 0;
+    public static double kD_X = 0;
 
-    public static int kP_Y = 0;
-    public static int kI_Y = 0;
-    public static int kD_Y = 0;
+    public static double kP_Y = 0.5;
+    public static double kI_Y = 0;
+    public static double kD_Y = 0;
 
-    public static int kP_Theta = 0;
-    public static int kI_Theta = 0;
-    public static int kD_Theta = 0;
+    public static double kP_Theta = 0.5;
+    public static double kI_Theta = 0;
+    public static double kD_Theta = 0;
   }
 }

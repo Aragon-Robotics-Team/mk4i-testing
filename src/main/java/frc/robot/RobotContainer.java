@@ -4,16 +4,25 @@
 
 package frc.robot;
 
+import java.util.List;
+
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.AutoDriveForward;
 import frc.robot.commands.JoystickDrive;
+import frc.robot.commands.PrintData;
 import frc.robot.subsystems.SwerveDrive;
+import frc.robot.utils.TrajectoryUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -26,6 +35,7 @@ public class RobotContainer {
 
   private final Joystick m_driverJoystick = new Joystick(DriveConstants.kDriveJoystickId);
 
+  private final PrintData m_print = new PrintData(m_swerve);
 
   private final JoystickDrive m_drive = new JoystickDrive(m_swerve, 
     () -> -m_driverJoystick.getRawAxis(DriveConstants.kJoystickXAxis),
@@ -33,10 +43,15 @@ public class RobotContainer {
     () -> -m_driverJoystick.getRawAxis(DriveConstants.kJoystickRotAxis)
   );
 
-  private AutoDriveForward m_autoDriveForward = new AutoDriveForward(m_swerve);
+  // private AutoDriveForward m_autoDriveForward = new AutoDriveForward(m_swerve);
+
+  private PathConstraints m_constraints = new PathConstraints(DriveConstants.kTeleopMaxSpeedMetersPerSecond, DriveConstants.kTeleopMaxAccelMetersPerSecondSquared);
+  private List<PathPlannerTrajectory> m_trajectories = TrajectoryUtils.readTrajectory("DriveForward", m_constraints);
+  private List<PPSwerveControllerCommand> m_swerveCommands = TrajectoryUtils.generatePPSwerveControllerCommand_(m_swerve, m_trajectories);
 
   public RobotContainer() {
     m_swerve.setDefaultCommand(m_drive);
+
     // Configure the trigger bindings
     configureBindings();
 
@@ -65,7 +80,10 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    // System.out.println("Trajectories :" + m_trajectories);
     // An example command will be run in autonomous
-    return m_autoDriveForward;
+    // return new ParallelCommandGroup(m_swerveCommands.get(0), m_print);
+    // return m_autoDriveForward;
+    return m_swerveCommands.get(0);
   }
 }
