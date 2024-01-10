@@ -28,7 +28,7 @@ public class AutoDriveForward extends CommandBase {
 
     
     m_trajectories = TrajectoryUtils.readTrajectory("DriveForward", m_constraints);
-    m_swerveCommands = TrajectoryUtils.generatePPSwerveControllerCommand_(m_swerve, m_trajectories);
+    m_swerveCommands = TrajectoryUtils.generatePPSwerveControllerCommand(m_swerve, m_trajectories);
         // Use addRequirements() here to declare subsystem dependencies.
   }
 

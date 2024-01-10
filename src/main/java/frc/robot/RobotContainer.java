@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriveConstants;
@@ -47,7 +48,9 @@ public class RobotContainer {
 
   private PathConstraints m_constraints = new PathConstraints(DriveConstants.kTeleopMaxSpeedMetersPerSecond, DriveConstants.kTeleopMaxAccelMetersPerSecondSquared);
   private List<PathPlannerTrajectory> m_trajectories = TrajectoryUtils.readTrajectory("DriveForward", m_constraints);
-  private List<PPSwerveControllerCommand> m_swerveCommands = TrajectoryUtils.generatePPSwerveControllerCommand_(m_swerve, m_trajectories);
+  private List<PPSwerveControllerCommand> m_swerveCommands = TrajectoryUtils.generatePPSwerveControllerCommand(m_swerve, m_trajectories);
+
+  private SequentialCommandGroup m_group = new SequentialCommandGroup(m_swerveCommands.get(0), m_print);
 
   public RobotContainer() {
     m_swerve.setDefaultCommand(m_drive);
@@ -84,6 +87,7 @@ public class RobotContainer {
     // An example command will be run in autonomous
     // return new ParallelCommandGroup(m_swerveCommands.get(0), m_print);
     // return m_autoDriveForward;
-    return m_swerveCommands.get(0);
+    return m_group;
+    //return m_swerveCommands.get(0);
   }
 }

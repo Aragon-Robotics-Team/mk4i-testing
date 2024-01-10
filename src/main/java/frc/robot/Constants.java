@@ -22,7 +22,8 @@ public final class Constants {
     public static final double kDriveEncoderVelocityToMetersPerSec = kDriveEncoderPositionToMeters / 60.0;
     public static final double kTurnEncoderPositionToRadians = 2.0 * Math.PI;
     public static final double kTranslationalDeadbandMetersPerSecond = 0.001;
-    public static final double kMaxTranslationalMetersPerSecond = 14.5;
+    public static final double kMaxTranslationalMetersPerSecond = Units.feetToMeters(14.5);
+    
     public static final double kPTurning = 0.5;
     public static final double kITurning = 0.0;
     public static final double kDTurning = 0.0;

@@ -34,7 +34,7 @@ public class TrajectoryUtils {
   }
 
   if (fileName.startsWith("Red")) {
-    var file = new File(Filesystem.getDeployDirectory(), "pathplanner/" + fileName + ".path");
+    var file = new File(Filesystem.getDeployDirectory(), "pathplanner/paths/" + fileName + ".path");
     if (!file.exists()) {
       DriverStation.reportWarning(
           "TrajectoryUtils::readTrajectory failed for " + fileName, false);
@@ -53,7 +53,7 @@ public class TrajectoryUtils {
     return PathPlanner.loadPathGroup(fileName, pathConstraint, segmentConstraints);
   } else {
     try {
-      var file = new File(Filesystem.getDeployDirectory(), "pathplanner/" + fileName + ".path");
+      var file = new File(Filesystem.getDeployDirectory(), "pathplanner/paths/" + fileName + ".path");
 
       return PathPlanner.loadPathGroup(fileName, pathConstraint, segmentConstraints);
     } catch (Exception e) {
@@ -67,10 +67,10 @@ public class TrajectoryUtils {
       SwerveDrive swerveDrive, String pathName, PathConstraints constraints) {
     var trajectories = readTrajectory(pathName, constraints);
 
-    return generatePPSwerveControllerCommand_(swerveDrive, trajectories);
+    return generatePPSwerveControllerCommand(swerveDrive, trajectories);
   }
 
-  public static List<PPSwerveControllerCommand> generatePPSwerveControllerCommand_(
+  public static List<PPSwerveControllerCommand> generatePPSwerveControllerCommand(
       SwerveDrive swerveDrive, List<PathPlannerTrajectory> trajectories) {
     List<PPSwerveControllerCommand> commands = new ArrayList<>();
 
