@@ -24,44 +24,50 @@ public class TrajectoryUtils {
   public static List<PathPlannerTrajectory> readTrajectory(
     String fileName, PathConstraints pathConstraint, PathConstraints... segmentConstraints) {
 
-  if (pathConstraint.maxVelocity == 0 || pathConstraint.maxAcceleration == 0) {
-    DriverStation.reportError(fileName + " has an invalid velocity/acceleration", true);
-  }
-  for (var c : segmentConstraints) {
-    if (c.maxVelocity == 0 || c.maxAcceleration == 0) {
+    if (pathConstraint.maxVelocity == 0 || pathConstraint.maxAcceleration == 0) {
       DriverStation.reportError(fileName + " has an invalid velocity/acceleration", true);
     }
-  }
-
-  if (fileName.startsWith("Red")) {
-    var file = new File(Filesystem.getDeployDirectory(), "pathplanner/paths/" + fileName + ".path");
-    if (!file.exists()) {
-      DriverStation.reportWarning(
-          "TrajectoryUtils::readTrajectory failed for " + fileName, false);
-      fileName = fileName.replace("Red", "Blue");
-
-      var pathGroup = PathPlanner.loadPathGroup(fileName, pathConstraint, segmentConstraints);
-
-      ArrayList<PathPlannerTrajectory> ppTrajectories = new ArrayList<>();
-      for (var trajectory : pathGroup) {
-        ppTrajectories.add(
-            PathPlannerTrajectory.transformTrajectoryForAlliance(
-                trajectory, DriverStation.Alliance.Red));
+    for (var c : segmentConstraints) {
+      if (c.maxVelocity == 0 || c.maxAcceleration == 0) {
+        DriverStation.reportError(fileName + " has an invalid velocity/acceleration", true);
       }
-      return ppTrajectories;
     }
-    return PathPlanner.loadPathGroup(fileName, pathConstraint, segmentConstraints);
-  } else {
-    try {
-      var file = new File(Filesystem.getDeployDirectory(), "pathplanner/paths/" + fileName + ".path");
 
+    if (fileName.startsWith("Red")) {
+      var file = new File(Filesystem.getDeployDirectory(), "pathplanner/paths/" + fileName + ".path");
+      if (!file.exists()) {
+        DriverStation.reportWarning(
+            "TrajectoryUtils::readTrajectory failed for " + fileName, false);
+        fileName = fileName.replace("Red", "Blue");
+
+        var pathGroup = PathPlanner.loadPathGroup(fileName, pathConstraint, segmentConstraints);
+
+        ArrayList<PathPlannerTrajectory> ppTrajectories = new ArrayList<>();
+        for (var trajectory : pathGroup) {
+          ppTrajectories.add(
+              PathPlannerTrajectory.transformTrajectoryForAlliance(
+                  trajectory, DriverStation.Alliance.Red));
+        }
+        return ppTrajectories;
+      }
       return PathPlanner.loadPathGroup(fileName, pathConstraint, segmentConstraints);
-    } catch (Exception e) {
-      DriverStation.reportError("TrajectoryUtils::readTrajectory failed for " + fileName, null);
-      return new ArrayList<>();
+    } else {
+      try {
+        var file = new File(
+          new File(
+            new File(Filesystem.getDeployDirectory(), "pathplanner"), 
+            "paths"
+          ),
+          fileName + ".path"
+        );
+
+        return PathPlanner.loadPathGroup(fileName, pathConstraint, segmentConstraints);
+      } catch (Exception e) {
+        DriverStation.reportError("TrajectoryUtils::readTrajectory failed for " + fileName, null);
+        return new ArrayList<>();
+      }
     }
   }
-}
 
   public static List<PPSwerveControllerCommand> generatePPSwerveControllerCommand(
       SwerveDrive swerveDrive, String pathName, PathConstraints constraints) {

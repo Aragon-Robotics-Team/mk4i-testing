@@ -47,7 +47,7 @@ public class RobotContainer {
   // private AutoDriveForward m_autoDriveForward = new AutoDriveForward(m_swerve);
 
   private PathConstraints m_constraints = new PathConstraints(DriveConstants.kTeleopMaxSpeedMetersPerSecond, DriveConstants.kTeleopMaxAccelMetersPerSecondSquared);
-  private List<PathPlannerTrajectory> m_trajectories = TrajectoryUtils.readTrajectory("DriveForward", m_constraints);
+  private List<PathPlannerTrajectory> m_trajectories = TrajectoryUtils.readTrajectory("Test", m_constraints);
   private List<PPSwerveControllerCommand> m_swerveCommands = TrajectoryUtils.generatePPSwerveControllerCommand(m_swerve, m_trajectories);
 
   private SequentialCommandGroup m_group = new SequentialCommandGroup(m_swerveCommands.get(0), m_print);
