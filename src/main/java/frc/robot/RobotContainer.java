@@ -6,9 +6,7 @@ package frc.robot;
 
 import java.util.List;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,11 +17,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.commands.AutoDriveForward;
 import frc.robot.commands.JoystickDrive;
 import frc.robot.commands.PrintData;
 import frc.robot.subsystems.SwerveDrive;
-import frc.robot.utils.TrajectoryUtils;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -45,12 +41,6 @@ public class RobotContainer {
   );
 
   // private AutoDriveForward m_autoDriveForward = new AutoDriveForward(m_swerve);
-
-  private PathConstraints m_constraints = new PathConstraints(DriveConstants.kTeleopMaxSpeedMetersPerSecond, DriveConstants.kTeleopMaxAccelMetersPerSecondSquared);
-  private List<PathPlannerTrajectory> m_trajectories = TrajectoryUtils.readTrajectory("Test", m_constraints);
-  private List<PPSwerveControllerCommand> m_swerveCommands = TrajectoryUtils.generatePPSwerveControllerCommand(m_swerve, m_trajectories);
-
-  private SequentialCommandGroup m_group = new SequentialCommandGroup(m_swerveCommands.get(0), m_print);
 
   public RobotContainer() {
     m_swerve.setDefaultCommand(m_drive);
@@ -87,7 +77,8 @@ public class RobotContainer {
     // An example command will be run in autonomous
     // return new ParallelCommandGroup(m_swerveCommands.get(0), m_print);
     // return m_autoDriveForward;
-    return m_group;
+    Command c = new PathPlannerAuto("TestAuto");
+    return c;
     //return m_swerveCommands.get(0);
   }
 }
